@@ -138,13 +138,20 @@
     form.addEventListener('submit', e => {
       e.preventDefault();
       fetch(scriptURL, {
-        method: 'POST',
-       mode:'no-cors',
-        body: new FormData(form)
-      })
-      .then(response => alert('Booking submitted!'))
-      .catch(error => alert('Error: ' + error.message));
-    });
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    Name: form.Name.value,
+    Phone: form.Phone.value,
+    Service: form.Service.value,
+    Date: form.Date.value,
+    Time: form.Time.value,
+    Stylist: form.Stylist.value,
+    Notes: form.Notes.value
+  })
+})
+.then(() => alert('Booking submitted successfully'))
+.catch(error => alert('Error: ' + error.message));
   </script>
 </body>
 </html>
