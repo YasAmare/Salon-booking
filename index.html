@@ -1,157 +1,147 @@
 <!DOCTYPE html>
-<html>
-<style>
-  * {
-    box-sizing: border-box;
-  }
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salon Booking</title>
+  <style>
+    :root {
+      --max-width: 800px;
+      --padding: 20px;
+      --font-size: 16px;
+    }
 
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f2f2f2;
-    margin: 0;
-    padding: 20px;
-  }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: var(--padding);
+      display: flex;
+      justify-content: center;
+      background-color: #f9f9f9;
+    }
 
-  form {
-    width: 100%;
-    max-width: 420px;
-    margin: auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-
-  h2 {
-    text-align: center;
-    color: #333;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
-
-  input, select, textarea {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-  }
-
-  button {
-    background-color: #ff4081;
-    color: white;
-    border: none;
-    padding: 14px;
-    margin-top: 20px;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-
-  button:hover {
-    background-color: #e03570;
-  }
-
-  @media screen and (max-width: 480px) {
-    form {
-      padding: 20px;
+    .container {
+      width: 100%;
+      max-width: var(--max-width);
+      background: white;
+      padding: var(--padding);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
 
     h2 {
-      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: grid;
+      gap: 15px;
     }
 
     input, select, textarea, button {
-      font-size: 0.95rem;
-      padding: 10px;
-    }
-  }
-</style>
-<head>
-  <title>Salon Booking</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f2f2f2;
-      padding: 20px;
-    }
-    form {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-    input, select, textarea {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
+      padding: 12px;
+      font-size: var(--font-size);
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 14px;
+      box-sizing: border-box;
     }
+
     button {
-      background-color: #ff4081;
+      background-color: #4CAF50;
       color: white;
       border: none;
-      padding: 12px;
-      margin-top: 15px;
-      border-radius: 6px;
-      font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
+
     button:hover {
-      background-color: #e03570;
+      background-color: #45a049;
+    }
+
+    @media (min-width: 768px) {
+      :root {
+        --font-size: 18px;
+        --padding: 30px;
+        --max-width: 900px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      :root {
+        --font-size: 20px;
+        --max-width: 1000px;
+      }
+    }
+
+    @media (min-width: 1920px) {
+      :root {
+        --font-size: 22px;
+        --max-width: 1200px;
+      }
+    }
+
+    @media (min-width: 2400px) {
+      :root {
+        --font-size: 24px;
+        --max-width: 1400px;
+      }
     }
   </style>
 </head>
 <body>
-  <form id="bookingForm">
-    <h2>Book Your Appointment</h2>
-    <input name="Name" placeholder="Full Name" required />
-    <input name="Phone" placeholder="Phone Number" required />
-    <select name="Service" required>
-      <option value="">Select Service</option>
-      <option>Haircut</option>
-      <option>Braids</option>
-      <option>Beard Trim</option>
-      <option>Nails</option>
-    </select>
-    <input name="Date" type="date" required />
-    <input name="Time" type="time" required />
-    <input name="Stylist" placeholder="Preferred Stylist" />
-    <textarea name="Notes" placeholder="Special Requests"></textarea>
-    <button type="submit">Submit</button>
-  </form>
+  <div class="container">
+    <form id="bookingForm">
+      <h2>Book Your Appointment</h2>
+      <input name="Name" placeholder="Full Name" required />
+      <input name="Phone" placeholder="Phone Number" required />
+      <select name="Service" required>
+        <option value="">Select Service</option>
+        <option>Braids</option>
+        <option>Hair-cut</option>
+        <option>Beard Trim</option>
+      </select>
+      <input name="Date" type="date" required />
+      <input name="Time" type="time" required />
+      <input name="Stylist" placeholder="Preferred Stylist" />
+      <textarea name="Notes" placeholder="Special Requests"></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyhXUTxBfaxm8Uo_o3J-hA9Qx9HQX5V3N4M_qYGnnLprG2idiv8YGEZOgFyASG2C5-P/exec";
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
     const form = document.getElementById('bookingForm');
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-      fetch(scriptURL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    Name: form.Name.value,
-    Phone: form.Phone.value,
-    Service: form.Service.value,
-    Date: form.Date.value,
-    Time: form.Time.value,
-    Stylist: form.Stylist.value,
-    Notes: form.Notes.value
-  })
-})
-.then(() => alert('Booking submitted successfully'))
-.catch(error => alert('Error: ' + error.message));
+      const bookingData = {
+        Name: form.Name.value,
+        Phone: form.Phone.value,
+        Service: form.Service.value,
+        Date: form.Date.value,
+        Time: form.Time.value,
+        Stylist: form.Stylist.value,
+        Notes: form.Notes.value,
+        Timestamp: new Date().toISOString()
+      };
+
+      db.ref("bookings").push(bookingData)
+        .then(() => alert("Booking submitted successfully"))
+        .catch(error => alert("Error: " + error.message));
+    });
   </script>
 </body>
 </html>
