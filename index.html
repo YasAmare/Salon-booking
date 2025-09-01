@@ -3,133 +3,94 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Salon Booking</title>
+  <title>Book Your Appointment</title>
   <style>
-    :root {
-      --max-width: 800px;
-      --padding: 20px;
-      --font-size: 16px;
-    }
-
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: var(--padding);
+      padding: 20px;
+      background: #f4f4f4;
       display: flex;
       justify-content: center;
-      background-color: #f9f9f9;
     }
-
     .container {
+      max-width: 600px;
       width: 100%;
-      max-width: var(--max-width);
       background: white;
-      padding: var(--padding);
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
       border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
     h2 {
       text-align: center;
       margin-bottom: 20px;
     }
-
     form {
       display: grid;
       gap: 15px;
     }
-
     input, select, textarea, button {
       width: 100%;
       padding: 12px;
-      font-size: var(--font-size);
+      font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 6px;
       box-sizing: border-box;
     }
-
     button {
       background-color: #4CAF50;
       color: white;
       border: none;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
-
     button:hover {
       background-color: #45a049;
     }
-
-    @media (min-width: 768px) {
-      :root {
-        --font-size: 18px;
-        --padding: 30px;
-        --max-width: 900px;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      :root {
-        --font-size: 20px;
-        --max-width: 1000px;
-      }
-    }
-
-    @media (min-width: 1920px) {
-      :root {
-        --font-size: 22px;
-        --max-width: 1200px;
-      }
-    }
-
-    @media (min-width: 2400px) {
-      :root {
-        --font-size: 24px;
-        --max-width: 1400px;
-      }
-    }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 <body>
   <div class="container">
+    <h2>Book Your Appointment</h2>
     <form id="bookingForm">
-      <h2>Book Your Appointment</h2>
       <input name="Name" placeholder="Full Name" required />
       <input name="Phone" placeholder="Phone Number" required />
       <select name="Service" required>
         <option value="">Select Service</option>
+        <option>Hair Cut</option>
         <option>Braids</option>
-        <option>Hair-cut</option>
+        <option>Hair-color</option>
         <option>Beard Trim</option>
       </select>
       <input name="Date" type="date" required />
       <input name="Time" type="time" required />
-      <input name="Stylist" placeholder="Preferred Stylist" />
-      <textarea name="Notes" placeholder="Special Requests"></textarea>
+      <input name="Stylist" placeholder="Preferred Barber" />
+      <textarea name="Notes" placeholder="Additional Notes"></textarea>
       <button type="submit">Submit</button>
     </form>
   </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
   <script>
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyD4jzcgaseR4zLTXN7PioVWjUPTneTofGQ",
-  authDomain: "salon-booking-b958f.firebaseapp.com",
-  databaseURL: "https://salon-booking-b958f-default-rtdb.firebaseio.com/",
-  projectId: "salon-booking-b958f",
-  storageBucket: "salon-booking-b958f.firebasestorage.app",
-  messagingSenderId: "682230304946",
-  appId: "1:682230304946:web:478cf9d5e498dda3cff9ab",
-  measurementId: "G-WCN29M12MJ"
-};
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const form = document.getElementById('bookingForm');
 
     form.addEventListener('submit', e => {
       e.preventDefault();
+
       const bookingData = {
         Name: form.Name.value,
         Phone: form.Phone.value,
@@ -142,7 +103,7 @@ const firebaseConfig = {
       };
 
       db.ref("bookings").push(bookingData)
-        .then(() => alert("Booking submitted successfully"))
+        .then(() => alert("Booking submitted successfully!"))
         .catch(error => alert("Error: " + error.message));
     });
   </script>
