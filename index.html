@@ -23,7 +23,7 @@
     h2, h3 {
       text-align: center;
     }
-    form, .card, .history-entry {
+    form, .card, .history-entry, .pending-entry {
       margin-bottom: 20px;
     }
     input, select, textarea, button {
@@ -44,11 +44,29 @@
     button:hover {
       background-color: #45a049;
     }
-    .card, .history-entry {
+    .card, .history-entry, .pending-entry {
       border: 1px solid #ccc;
       padding: 15px;
       border-radius: 8px;
       background: #e8f5e9;
+    }
+    .pending-entry {
+      background: #fff3cd;
+    }
+    .telegram-button {
+      display: inline-flex;
+      align-items: center;
+      background-color: #0088cc;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+    .telegram-button img {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
     }
   </style>
 </head>
@@ -75,8 +93,14 @@
     <div id="confirmationCard" style="display:none;"></div>
 
     <button onclick="clearBookingHistory()">Clear My Booking History</button>
+
+    <div id="pendingBookings">
+      <h3>Pending Bookings</h3>
+      <div id="pendingList"></div>
+    </div>
+
     <div id="bookingHistory">
-      <h3>Your Previous Bookings</h3>
+      <h3>Your Confirmed Bookings</h3>
       <div id="historyList"></div>
     </div>
   </div>
@@ -87,14 +111,15 @@
 
   <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyAGhPaWhjjPc9I6cWa4nDkg8Kt3c7H0uZM",
-  authDomain: "salonbooking-6d5aa.firebaseapp.com",
-  databaseURL: "https://salonbooking-6d5aa-default-rtdb.firebaseio.com",
-  projectId: "salonbooking-6d5aa",
-  storageBucket: "salonbooking-6d5aa.firebasestorage.app",
-  messagingSenderId: "11411859014",
-  appId: "1:11411859014:web:926076fa2feaba87280c47"
-};
+      apiKey: "AlzaSyAGhPaWhjPc9l6cWa4nDkg8Kt3c7H0UzM",
+      authDomain: "salonbooking-6d5aa.firebaseapp.com",
+      databaseURL: "https://salonbooking-6d5aa-default-rtdb.firebaseio.com/",
+      projectId: "salonbooking-6d5aa",
+      storageBucket: "salonbooking-6d5aa.appspot.com",
+      messagingSenderId: "11411859014",
+      appId: "1:11411859014:web:926076fa2feba87280c47"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const form = document.getElementById('bookingForm');
@@ -110,7 +135,8 @@
         Time: form.Time.value,
         Stylist: form.Stylist.value,
         Notes: form.Notes.value,
-        Timestamp: new Date().toISOString()
+        Timestamp: new Date().toISOString(),
+        Status: "Pending"
       };
 
       const ref = db.ref("bookings").push();
@@ -120,7 +146,7 @@
         // Show confirmation card
         const card = `
           <div class="card">
-            <h3>Appointment Confirmed</h3>
+            <h3>Appointment Submitted</h3>
             <p><strong>Name:</strong> ${bookingData.Name}</p>
             <p><strong>Service:</strong> ${bookingData.Service}</p>
             <p><strong>Date:</strong> ${bookingData.Date}</p>
@@ -128,6 +154,11 @@
             <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
             <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
             <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
+            <a class="telegram-button" target="_blank"
+              href="https://t.me/share/url?url=https://salonbooking.com&text=Hi, I just booked a ${bookingData.Service} on ${bookingData.Date} at ${bookingData.Time} with ${bookingData.Stylist || 'Any'} (Ref: ${bookingData.RefID})">
+              <img src="https://img.icons8.com/color/48/telegram-app.png" alt="Telegram Logo" />
+              Notify via Telegram
+            </a>
           </div>
         `;
         document.getElementById("confirmationCard").innerHTML = card;
@@ -140,28 +171,43 @@
 
         // Show history
         showBookingHistory();
+
+        // Reset form
+        form.reset();
       }).catch(error => alert("Error: " + error.message));
     });
 
     function showBookingHistory() {
-      const historyList = document.getElementById("historyList");
       const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+      const historyList = document.getElementById("historyList");
+      const pendingList = document.getElementById("pendingList");
 
-      historyList.innerHTML = history.map(data => `
-        <div class="history-entry">
-          <p><strong>Service:</strong> ${data.Service}</p>
-          <p><strong>Date:</strong> ${data.Date}</p>
-          <p><strong>Time:</strong> ${data.Time}</p>
-          <p><strong>Stylist:</strong> ${data.Stylist || "Any"}</p>
-          <p><strong>Ref ID:</strong> ${data.RefID || "N/A"}</p>
-          <p><strong>Booked At:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
-        </div>
-      `).join("");
+      historyList.innerHTML = "";
+      pendingList.innerHTML = "";
+
+      history.forEach(data => {
+        const entry = `
+          <div class="${data.Status === 'Pending' ? 'pending-entry' : 'history-entry'}">
+            <p><strong>Service:</strong> ${data.Service}</p>
+            <p><strong>Date:</strong> ${data.Date}</p>
+            <p><strong>Time:</strong> ${data.Time}</p>
+            <p><strong>Stylist:</strong> ${data.Stylist || "Any"}</p>
+            <p><strong>Ref ID:</strong> ${data.RefID || "N/A"}</p>
+            <p><strong>Booked At:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
+          </div>
+        `;
+        if (data.Status === "Pending") {
+          pendingList.innerHTML += entry;
+        } else {
+          historyList.innerHTML += entry;
+        }
+      });
     }
 
     function clearBookingHistory() {
       localStorage.removeItem("bookingHistory");
       document.getElementById("historyList").innerHTML = "";
+      document.getElementById("pendingList").innerHTML = "";
       alert("Your booking history has been cleared.");
     }
 
