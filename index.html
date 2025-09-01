@@ -7,9 +7,8 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 20px;
       background: #f4f4f4;
+      padding: 20px;
       display: flex;
       justify-content: center;
     }
@@ -21,18 +20,17 @@
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2 {
+    h2, h3 {
       text-align: center;
-      margin-bottom: 20px;
     }
-    form {
-      display: grid;
-      gap: 15px;
+    form, .card, .history-entry {
+      margin-bottom: 20px;
     }
     input, select, textarea, button {
       width: 100%;
       padding: 12px;
       font-size: 16px;
+      margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       box-sizing: border-box;
@@ -45,6 +43,12 @@
     }
     button:hover {
       background-color: #45a049;
+    }
+    .card, .history-entry {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      background: #e8f5e9;
     }
   </style>
 </head>
@@ -68,7 +72,13 @@
       <button type="submit">Submit</button>
     </form>
 
-    <div id="confirmationCard" style="display:none; margin-top:20px;"></div>
+    <div id="confirmationCard" style="display:none;"></div>
+
+    <button onclick="clearBookingHistory()">Clear My Booking History</button>
+    <div id="bookingHistory">
+      <h3>Your Previous Bookings</h3>
+      <div id="historyList"></div>
+    </div>
   </div>
 
   <!-- Firebase SDKs -->
@@ -77,14 +87,8 @@
 
   <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyAGhPaWhjjPc9I6cWa4nDkg8Kt3c7H0uZM",
-  databaseURL: "https://salonbooking-6d5aa-default-rtdb.firebaseio.com/",
-  authDomain: "salonbooking-6d5aa.firebaseapp.com",
-  projectId: "salonbooking-6d5aa",
-  storageBucket: "salonbooking-6d5aa.firebasestorage.app",
-  messagingSenderId: "11411859014",
-  appId: "1:11411859014:web:926076fa2feaba87280c47"
-};
+      // 🔧 Insert your Firebase config here
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -103,49 +107,61 @@
         Notes: form.Notes.value,
         Timestamp: new Date().toISOString()
       };
-      bookingData.Timestamp = new Date().toISOString();
-      db.ref("bookings").push(bookingData)
-  .then(() => {
-    // Show confirmation card
-    const card = `
-      <div style="border:1px solid #ccc; padding:15px; border-radius:8px; background:#e8f5e9;">
-        <h3>Appointment Confirmed</h3>
-        <p><strong>Name:</strong> ${bookingData.Name}</p>
-        <p><strong>Service:</strong> ${bookingData.Service}</p>
-        <p><strong>Date:</strong> ${bookingData.Date}</p>
-        <p><strong>Time:</strong> ${bookingData.Time}</p>
-        <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
-        <p><strong>Time:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>    
-        
-      </div>
-    `;
-    document.getElementById("confirmationCard").innerHTML = card;
-    document.getElementById("confirmationCard").style.display = "block";
 
-    <div id="bookingHistory" style="margin-top:30px;">
-  <h3>Your Previous Bookings</h3>
-  <div id="historyList"></div>
-  ¡  </div>
-    // Save to local history
-    const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-    history.push(bookingData);
-    localStorage.setItem("bookingHistory", JSON.stringify(history));
+      const ref = db.ref("bookings").push();
+      ref.set(bookingData).then(() => {
+        bookingData.RefID = ref.key;
 
-    // Show history
+        // Show confirmation card
+        const card = `
+          <div class="card">
+            <h3>Appointment Confirmed</h3>
+            <p><strong>Name:</strong> ${bookingData.Name}</p>
+            <p><strong>Service:</strong> ${bookingData.Service}</p>
+            <p><strong>Date:</strong> ${bookingData.Date}</p>
+            <p><strong>Time:</strong> ${bookingData.Time}</p>
+            <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
+            <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
+            <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
+          </div>
+        `;
+        document.getElementById("confirmationCard").innerHTML = card;
+        document.getElementById("confirmationCard").style.display = "block";
+
+        // Save to local history
+        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+        history.push(bookingData);
+        localStorage.setItem("bookingHistory", JSON.stringify(history));
+
+        // Show history
+        showBookingHistory();
+      }).catch(error => alert("Error: " + error.message));
+    });
+
     function showBookingHistory() {
-  const historyList = document.getElementById("historyList");
-  const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+      const historyList = document.getElementById("historyList");
+      const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
 
-  historyList.innerHTML = history.map(data => `
-    <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px;">
-      <p><strong>${data.Service}</strong> on ${data.Date} at ${data.Time}</p>
-      <p>Stylist: ${data.Stylist || "Any"}</p>
-      <p><strong>Date/Time:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
-      </div>
-  `).join("");
-}
-    })
-  .catch(error => alert("Error: " + error.message));
- </script>
+      historyList.innerHTML = history.map(data => `
+        <div class="history-entry">
+          <p><strong>Service:</strong> ${data.Service}</p>
+          <p><strong>Date:</strong> ${data.Date}</p>
+          <p><strong>Time:</strong> ${data.Time}</p>
+          <p><strong>Stylist:</strong> ${data.Stylist || "Any"}</p>
+          <p><strong>Ref ID:</strong> ${data.RefID || "N/A"}</p>
+          <p><strong>Booked At:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
+        </div>
+      `).join("");
+    }
+
+    function clearBookingHistory() {
+      localStorage.removeItem("bookingHistory");
+      document.getElementById("historyList").innerHTML = "";
+      alert("Your booking history has been cleared.");
+    }
+
+    // Load history on page load
+    showBookingHistory();
+  </script>
 </body>
 </html>
