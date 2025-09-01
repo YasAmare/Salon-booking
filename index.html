@@ -53,23 +53,6 @@
     .pending-entry {
       background: #fff3cd;
     }
-    .telegram-button {
-      display: inline-flex;
-      align-items: center;
-      background-color: #0088cc;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 6px;
-      text-decoration: none;
-      margin-top: 10px;
-      border: none;
-      cursor: pointer;
-    }
-    .telegram-button img {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-    }
   </style>
 </head>
 <body>
@@ -157,31 +140,9 @@
             <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
             <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
             <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
-            <button id="sendTelegram" class="telegram-button">
-              <img src="https://img.icons8.com/color/48/telegram-app.png" alt="Telegram Logo" />
-              Notify via Telegram
-            </button>
-            <div id="telegramStatus" style="margin-top:10px;"></div>
           </div>
         `;
         document.getElementById("confirmationCard").style.display = "block";
-
-        document.getElementById("sendTelegram").addEventListener("click", () => {
-          fetch("https://api.telegram.org/bot8455761527:AAGJWQoGdo7iBcbV_uaQ8xeEl8A86YA93e8/sendMessage", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: "-1003010432485",
-              text: `📢 New Booking:\n👤 ${bookingData.Name}\n📞 ${bookingData.Phone}\n💇 ${bookingData.Service}\n📅 ${bookingData.Date} at ${bookingData.Time}\n✂️ Stylist: ${bookingData.Stylist || "Any"}\n🆔 Ref: ${bookingData.RefID}`
-            })
-          })
-          .then(() => {
-            document.getElementById("telegramStatus").innerHTML = `<p style="color:green;"><strong>Telegram notification sent ✅</strong></p>`;
-          })
-          .catch(() => {
-            document.getElementById("telegramStatus").innerHTML = `<p style="color:red;"><strong>Failed to send Telegram notification ❌</strong></p>`;
-          });
-        });
 
         form.reset();
         showBookingHistory();
