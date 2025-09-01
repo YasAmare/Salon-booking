@@ -114,8 +114,7 @@
         <p><strong>Date:</strong> ${bookingData.Date}</p>
         <p><strong>Time:</strong> ${bookingData.Time}</p>
         <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
-        <p><strong>Ref:</strong> ${bookingData.Timestamp.toLocaleString()}/p>
-      </div>
+        <p><strong>Time:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>     </div>
     `;
     document.getElementById("confirmationCard").innerHTML = card;
     document.getElementById("confirmationCard").style.display = "block";
