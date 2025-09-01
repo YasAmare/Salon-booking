@@ -145,6 +145,15 @@
       ref.set(bookingData).then(() => {
         bookingData.RefID = ref.key;
 
+        fetch("https://api.telegram.org/bot8455761527:AAGJWQoGdo7iBcbV_uaQ8xeEl8A86YA93e8/sendMessage", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: "-1003010432485",
+    text: `📢 New Booking:\n👤 ${bookingData.Name}\n📞 ${bookingData.Phone}\n💇 ${bookingData.Service}\n📅 ${bookingData.Date} at ${bookingData.Time}\n✂️ Stylist: ${bookingData.Stylist || "Any"}\n🆔 Ref: ${bookingData.RefID}`
+  })
+})
+
         const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
         history.push(bookingData);
         localStorage.setItem("bookingHistory", JSON.stringify(history));
