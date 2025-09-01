@@ -67,6 +67,8 @@
       <textarea name="Notes" placeholder="Additional Notes"></textarea>
       <button type="submit">Submit</button>
     </form>
+
+    <div id="confirmationCard" style="display:none; margin-top:20px;"></div>
   </div>
 
   <!-- Firebase SDKs -->
@@ -101,11 +103,47 @@
         Notes: form.Notes.value,
         Timestamp: new Date().toISOString()
       };
-
       db.ref("bookings").push(bookingData)
-        .then(() => alert("Booking submitted successfully!"))
-        .catch(error => alert("Error: " + error.message));
-    });
-  </script>
+  .then(() => {
+    // Show confirmation card
+    const card = `
+      <div style="border:1px solid #ccc; padding:15px; border-radius:8px; background:#e8f5e9;">
+        <h3>Appointment Confirmed</h3>
+        <p><strong>Name:</strong> ${bookingData.Name}</p>
+        <p><strong>Service:</strong> ${bookingData.Service}</p>
+        <p><strong>Date:</strong> ${bookingData.Date}</p>
+        <p><strong>Time:</strong> ${bookingData.Time}</p>
+        <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
+        <p><strong>Ref:</strong> ${bookingData.Timestamp}</p>
+      </div>
+    `;
+    document.getElementById("confirmationCard").innerHTML = card;
+    document.getElementById("confirmationCard").style.display = "block";
+
+    <div id="bookingHistory" style="margin-top:30px;">
+  <h3>Your Previous Bookings</h3>
+  <div id="historyList"></div>
+  ¡  </div>
+    // Save to local history
+    const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+    history.push(bookingData);
+    localStorage.setItem("bookingHistory", JSON.stringify(history));
+
+    // Show history
+    function showBookingHistory() {
+  const historyList = document.getElementById("historyList");
+  const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+
+  historyList.innerHTML = history.map(data => `
+    <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px;">
+      <p><strong>${data.Service}</strong> on ${data.Date} at ${data.Time}</p>
+      <p>Stylist: ${data.Stylist || "Any"}</p>
+      <p>Ref: ${data.Timestamp}</p>
+    </div>
+  `).join("");
+}
+    })
+  .catch(error => alert("Error: " + error.message));
+ </script>
 </body>
 </html>
