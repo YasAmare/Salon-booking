@@ -138,8 +138,8 @@
     <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px;">
       <p><strong>${data.Service}</strong> on ${data.Date} at ${data.Time}</p>
       <p>Stylist: ${data.Stylist || "Any"}</p>
-      <p>Ref: ${data.Timestamp.toLocaleString()}p>
-    </div>
+      <p><em>${new Date(data.Timestamp).toLocaleString()}</em></p>
+      </div>
   `).join("");
 }
     })
