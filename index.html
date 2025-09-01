@@ -103,6 +103,7 @@
         Notes: form.Notes.value,
         Timestamp: new Date().toISOString()
       };
+      bookingData.Timestamp = new Date().toISOString();
       db.ref("bookings").push(bookingData)
   .then(() => {
     // Show confirmation card
