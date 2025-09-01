@@ -62,6 +62,8 @@
       border-radius: 6px;
       text-decoration: none;
       margin-top: 10px;
+      border: none;
+      cursor: pointer;
     }
     .telegram-button img {
       width: 20px;
@@ -143,18 +145,11 @@
       ref.set(bookingData).then(() => {
         bookingData.RefID = ref.key;
 
-        fetch("https://api.telegram.org/botYOUR_TOKEN/sendMessage", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    chat_id: "-100YOUR_CHAT_ID",
-    text: `📢 *New Booking:*\n👤 ${bookingData.Name}\n📞 ${bookingData.Phone}\n💇 ${bookingData.Service}\n📅 ${bookingData.Date} at ${bookingData.Time}\n✂️ Stylist: ${bookingData.Stylist || "Any"}\n🆔 Ref: ${bookingData.RefID}`,
-    parse_mode: "Markdown"
-  })
-});
+        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
+        history.push(bookingData);
+        localStorage.setItem("bookingHistory", JSON.stringify(history));
 
-        // Show confirmation card
-        const card = `
+        document.getElementById("confirmationCard").innerHTML = `
           <div class="card">
             <h3>Appointment Submitted</h3>
             <p><strong>Name:</strong> ${bookingData.Name}</p>
@@ -164,26 +159,34 @@
             <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
             <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
             <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
-            <a class="telegram-button" target="_blank"
-              href="https://t.me/share/url?url=https://salonbooking.com&text=Hi, I just booked a ${bookingData.Service} on ${bookingData.Date} at ${bookingData.Time} with ${bookingData.Stylist || 'Any'} (Ref: ${bookingData.RefID})">
+            <button id="sendTelegram" class="telegram-button">
               <img src="https://img.icons8.com/color/48/telegram-app.png" alt="Telegram Logo" />
               Notify via Telegram
-            </a>
+            </button>
+            <div id="telegramStatus" style="margin-top:10px;"></div>
           </div>
         `;
-        document.getElementById("confirmationCard").innerHTML = card;
         document.getElementById("confirmationCard").style.display = "block";
 
-        // Save to local history
-        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-        history.push(bookingData);
-        localStorage.setItem("bookingHistory", JSON.stringify(history));
+        document.getElementById("sendTelegram").addEventListener("click", () => {
+          fetch("https://api.telegram.org/bot8455761527:AAGJWQoGdo7iBcbV_uaQ8xeEl8A86YA93e8/sendMessage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: "-1003010432485",
+              text: `📢 New Booking:\n👤 ${bookingData.Name}\n📞 ${bookingData.Phone}\n💇 ${bookingData.Service}\n📅 ${bookingData.Date} at ${bookingData.Time}\n✂️ Stylist: ${bookingData.Stylist || "Any"}\n🆔 Ref: ${bookingData.RefID}`
+            })
+          })
+          .then(() => {
+            document.getElementById("telegramStatus").innerHTML = `<p style="color:green;"><strong>Telegram notification sent ✅</strong></p>`;
+          })
+          .catch(() => {
+            document.getElementById("telegramStatus").innerHTML = `<p style="color:red;"><strong>Failed to send Telegram notification ❌</strong></p>`;
+          });
+        });
 
-        // Show history
-        showBookingHistory();
-
-        // Reset form
         form.reset();
+        showBookingHistory();
       }).catch(error => alert("Error: " + error.message));
     });
 
@@ -204,25 +207,4 @@
             <p><strong>Stylist:</strong> ${data.Stylist || "Any"}</p>
             <p><strong>Ref ID:</strong> ${data.RefID || "N/A"}</p>
             <p><strong>Booked At:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
-          </div>
-        `;
-        if (data.Status === "Pending") {
-          pendingList.innerHTML += entry;
-        } else {
-          historyList.innerHTML += entry;
-        }
-      });
-    }
-
-    function clearBookingHistory() {
-      localStorage.removeItem("bookingHistory");
-      document.getElementById("historyList").innerHTML = "";
-      document.getElementById("pendingList").innerHTML = "";
-      alert("Your booking history has been cleared.");
-    }
-
-    // Load history on page load
-    showBookingHistory();
-  </script>
-</body>
-</html>
+         [43dcd9a7-70db-4a1f-b0ae-981daa162054](https://github.com/Ronnie434/30-days-of-React/tree/22142106cb46f717a1259f84227cc90ed7fe50cc/02_Day_Introduction_to_React%2F02_introduction_to_react.md?citationMarker=43dcd9a7-70db-4a1f-b0ae-981daa162054 "1")[43dcd9a7-70db-4a1f-b0ae-981daa162054](https://github.com/qolbudr/huniaja/tree/dfffc3911a0f8482d668f6ac884f7ca81dbe151b/laravel%2Fresources%2Fviews%2Fmaster.blade.php?citationMarker=43dcd9a7-70db-4a1f-b0ae-981daa162054 "2")[43dcd9a7-70db-4a1f-b0ae-981daa162054](https://github.com/Joshi-labs/gamedev/tree/2dd18cd352d5590f29d784d3e9142c67979959c6/APS%20Talks%2Findex2.php?citationMarker=43dcd9a7-70db-4a1f-b0ae-981daa162054 "3")
