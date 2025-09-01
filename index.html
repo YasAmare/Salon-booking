@@ -143,12 +143,13 @@
       ref.set(bookingData).then(() => {
         bookingData.RefID = ref.key;
 
-        fetch("https://api.telegram.org/bot8455761527:AAGJWQoGdo7iBcbV_uaQ8xeEl8A86YA93e8/sendMessage", {
+        fetch("https://api.telegram.org/botYOUR_TOKEN/sendMessage", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    chat_id: "-1003010432485", // your actual channel ID
-    text: `📢 New Booking:\n👤 ${bookingData.Name}\n📞 ${bookingData.Phone}\n💇 ${bookingData.Service}\n📅 ${bookingData.Date} at ${bookingData.Time}\n✂️ Stylist: ${bookingData.Stylist || "Any"}\n🆔 Ref: ${bookingData.RefID}`
+    chat_id: "-100YOUR_CHAT_ID",
+    text: `📢 *New Booking:*\n👤 ${bookingData.Name}\n📞 ${bookingData.Phone}\n💇 ${bookingData.Service}\n📅 ${bookingData.Date} at ${bookingData.Time}\n✂️ Stylist: ${bookingData.Stylist || "Any"}\n🆔 Ref: ${bookingData.RefID}`,
+    parse_mode: "Markdown"
   })
 });
 
