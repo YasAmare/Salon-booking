@@ -115,7 +115,9 @@
         <p><strong>Date:</strong> ${bookingData.Date}</p>
         <p><strong>Time:</strong> ${bookingData.Time}</p>
         <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
-        <p><strong>Time:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>     </div>
+        <p><strong>Time:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>    
+        
+      </div>
     `;
     document.getElementById("confirmationCard").innerHTML = card;
     document.getElementById("confirmationCard").style.display = "block";
@@ -138,7 +140,7 @@
     <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px;">
       <p><strong>${data.Service}</strong> on ${data.Date} at ${data.Time}</p>
       <p>Stylist: ${data.Stylist || "Any"}</p>
-      <p><em>${new Date(data.Timestamp).toLocaleString()}</em></p>
+      <p><strong>Date/Time:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
       </div>
   `).join("");
 }
