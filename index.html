@@ -3,92 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Book Your Appointment</title>
+  <title>Book Appointment</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #f4f4f4;
       padding: 20px;
-      display: flex;
-      justify-content: center;
+      margin: 0;
     }
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background: white;
-      padding: 20px;
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    form, .card {
+      background: #ffffff;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin: 0 auto;
+      max-width: 500px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
     }
-    h2, h3 {
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .status {
+      font-weight: bold;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 6px;
       text-align: center;
     }
-    form, .card, .history-entry, .pending-entry {
-      margin-bottom: 20px;
+    .status.Pending {
+      background-color: #fff3cd;
+      color: #856404;
     }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
+    .status.Confirmed {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status.Canceled {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .status.Rescheduled {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+    .message {
       margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .card, .history-entry, .pending-entry {
-      border: 1px solid #ccc;
-      padding: 15px;
-      border-radius: 8px;
-      background: #e8f5e9;
-    }
-    .pending-entry {
-      background: #fff3cd;
+      font-style: italic;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Book Your Appointment</h2>
-    <form id="bookingForm">
-      <input name="Name" placeholder="Full Name" required />
-      <input name="Phone" placeholder="Phone Number" required />
-      <select name="Service" required>
-        <option value="">Select Service</option>
-        <option>Hair Cut</option>
-        <option>Braids</option>
-        <option>Hair-color</option>
-        <option>Beard Trim</option>
-      </select>
-      <input name="Date" type="date" required />
-      <input name="Time" type="time" required />
-      <input name="Stylist" placeholder="Preferred Barber" />
-      <textarea name="Notes" placeholder="Additional Notes"></textarea>
-      <button type="submit">Submit</button>
-    </form>
+  <h2>Book Your Appointment</h2>
 
-    <div id="confirmationCard" style="display:none;"></div>
+  <form id="bookingForm" onsubmit="submitBooking(event)">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="text" id="phone" placeholder="Phone Number" required />
+    <select id="service" required>
+      <option value="">Select Service</option>
+      <option value="Braids">Braids</option>
+      <option value="Haircut">Haircut</option>
+      <option value="Coloring">Coloring</option>
+      <option value="Shave">Shave</option>
+    </select>
+    <input type="date" id="date" required />
+    <input type="time" id="time" required />
+    <button type="submit">Book Appointment</button>
+  </form>
 
-    <button onclick="clearBookingHistory()">Clear My Booking History</button>
-
-    <div id="pendingBookings">
-      <h3>Pending Bookings</h3>
-      <div id="pendingList"></div>
-    </div>
-
-    <div id="bookingHistory">
-      <h3>Your Confirmed Bookings</h3>
-      <div id="historyList"></div>
-    </div>
-  </div>
+  <div id="statusCard"></div>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -105,85 +96,65 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const form = document.getElementById('bookingForm');
-
-    form.addEventListener('submit', e => {
+    function submitBooking(e) {
       e.preventDefault();
 
-      const bookingData = {
-        Name: form.Name.value,
-        Phone: form.Phone.value,
-        Service: form.Service.value,
-        Date: form.Date.value,
-        Time: form.Time.value,
-        Stylist: form.Stylist.value,
-        Notes: form.Notes.value,
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const service = document.getElementById("service").value;
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+
+      const booking = {
+        Name: name,
+        Phone: phone,
+        Service: service,
+        Date: date,
+        Time: time,
+        Status: "Pending",
+        Message: "",
         Timestamp: new Date().toISOString(),
-        Status: "Pending"
+        chat_id: "" // Optional: populate if captured from Telegram bot
       };
 
       const ref = db.ref("bookings").push();
-      ref.set(bookingData).then(() => {
-        bookingData.RefID = ref.key;
+      ref.set(booking).then(() => {
+        document.getElementById("bookingForm").style.display = "none";
+        listenForStatus(phone);
+      });
+    }
 
-        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-        history.push(bookingData);
-        localStorage.setItem("bookingHistory", JSON.stringify(history));
+    function listenForStatus(phone) {
+      const container = document.getElementById("statusCard");
+      container.innerHTML = "<p>Waiting for salon confirmation...</p>";
 
-        document.getElementById("confirmationCard").innerHTML = `
-          <div class="card">
-            <h3>Appointment Submitted</h3>
-            <p><strong>Name:</strong> ${bookingData.Name}</p>
-            <p><strong>Service:</strong> ${bookingData.Service}</p>
-            <p><strong>Date:</strong> ${bookingData.Date}</p>
-            <p><strong>Time:</strong> ${bookingData.Time}</p>
-            <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
-            <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
-            <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
-          </div>
-        `;
-        document.getElementById("confirmationCard").style.display = "block";
+      db.ref("bookings").orderByChild("Phone").equalTo(phone).on("value", snapshot => {
+        container.innerHTML = "";
+        if (!snapshot.exists()) {
+          container.innerHTML = "<p>No appointment found.</p>";
+          return;
+        }
 
-        form.reset();
-        showBookingHistory();
-      }).catch(error => alert("Firebase error: " + error.message));
-    });
+        snapshot.forEach(child => {
+          const data = child.val();
+          const statusClass = data.Status || "Pending";
+          const message = data.Message || "";
 
-    function showBookingHistory() {
-      const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-      const historyList = document.getElementById("historyList");
-      const pendingList = document.getElementById("pendingList");
-
-      historyList.innerHTML = "";
-      pendingList.innerHTML = "";
-
-      history.forEach(data => {
-        const entry = `
-          <div class="${data.Status === 'Pending' ? 'pending-entry' : 'history-entry'}">
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <p><strong>Name:</strong> ${data.Name}</p>
             <p><strong>Service:</strong> ${data.Service}</p>
             <p><strong>Date:</strong> ${data.Date}</p>
             <p><strong>Time:</strong> ${data.Time}</p>
             <p><strong>Stylist:</strong> ${data.Stylist || "Any"}</p>
-            <p><strong>Ref ID:</strong> ${data.RefID || "N/A"}</p>
-            <p><strong>Booked At:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
-          </div>
-        `;
-        if (data.Status === "Pending") {
-          pendingList.innerHTML += entry;
-        } else {
-          historyList.innerHTML += entry;
-        }
+            <div class="status ${statusClass}">${statusClass}</div>
+            ${message ? `<div class="message">${message}</div>` : ""}
+          `;
+          container.appendChild(card);
+        });
       });
     }
-
-    function clearBookingHistory() {
-      localStorage.removeItem("bookingHistory");
-      document.getElementById("historyList").innerHTML = "";
-      document.getElementById("pendingList").innerHTML = "";
-      alert("Your booking history has been cleared.");
-    }
-
-    showBookingHistory();
   </script>
 </body>
 </html>
