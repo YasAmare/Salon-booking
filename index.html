@@ -5,13 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Book Your Appointment</title>
   <style>
+    :root {
+      --primary: #8E44AD;      /* Rich purple */
+      --accent: #F39C12;       /* Warm amber */
+      --background: #FFF8F0;   /* Creamy beige */
+      --text: #4D4D4D;         /* Soft black */
+      --highlight: #E67E22;    /* Orange pop */
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f4f4f4;
+      background: var(--background);
       padding: 20px;
       display: flex;
       justify-content: center;
+      color: var(--text);
     }
+
     .container {
       max-width: 600px;
       width: 100%;
@@ -19,40 +29,53 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-top: 6px solid var(--primary);
     }
+
     h2, h3 {
       text-align: center;
+      color: var(--primary);
     }
+
     form, .card, .history-entry, .pending-entry {
       margin-bottom: 20px;
     }
+
     input, select, textarea, button {
       width: 100%;
       padding: 12px;
       font-size: 16px;
       margin-top: 10px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--accent);
       border-radius: 6px;
       box-sizing: border-box;
+      background-color: #fff;
+      color: var(--text);
     }
+
     button {
-      background-color: #4CAF50;
+      background-color: var(--primary);
       color: white;
       border: none;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
+
     button:hover {
-      background-color: #45a049;
+      background-color: var(--highlight);
     }
+
     .card, .history-entry, .pending-entry {
-      border: 1px solid #ccc;
+      border: 1px solid var(--accent);
       padding: 15px;
       border-radius: 8px;
-      background: #e8f5e9;
+      background: #fdf6e3;
     }
+
     .pending-entry {
       background: #fff3cd;
     }
+
     .status {
       font-weight: bold;
       margin-top: 10px;
@@ -60,22 +83,26 @@
       border-radius: 6px;
       text-align: center;
     }
+
     .status.Confirmed {
       background-color: #d4edda;
       color: #155724;
     }
+
     .status.Canceled {
       background-color: #f8d7da;
       color: #721c24;
     }
+
     .status.Rescheduled {
       background-color: #cce5ff;
       color: #004085;
     }
+
     .message {
       margin-top: 10px;
       font-style: italic;
-      color: #333;
+      color: var(--text);
     }
   </style>
 </head>
@@ -113,7 +140,6 @@
       <div id="historyList"></div>
     </div>
   </div>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <script>
@@ -173,6 +199,7 @@
         listenForStatusUpdates(bookingData.Phone);
       }).catch(error => alert("Firebase error: " + error.message));
     });
+
     function listenForStatusUpdates(phone) {
       db.ref("bookings").orderByChild("Phone").equalTo(phone).on("value", snapshot => {
         const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
@@ -236,4 +263,4 @@
     showBookingHistory();
   </script>
 </body>
-</html>
+    </html>
