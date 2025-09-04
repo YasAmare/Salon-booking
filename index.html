@@ -3,264 +3,351 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Book Your Appointment</title>
+  <title>GlowUp Appointment</title>
   <style>
     :root {
-      --primary: #8E44AD;      /* Rich purple */
-      --accent: #F39C12;       /* Warm amber */
-      --background: #FFF8F0;   /* Creamy beige */
-      --text: #4D4D4D;         /* Soft black */
-      --highlight: #E67E22;    /* Orange pop */
+      --bg-start: #fbe9e7;
+      --bg-end: #f3e5f5;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --text: #3e3e3e;
+      --accent: #a1887f;
+      --primary: #6a1b9a;
+      --hover: #8e24aa;
+      --highlight: #ffb74d;
     }
 
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--background);
-      padding: 20px;
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
       display: flex;
       justify-content: center;
+      padding: 40px 20px;
       color: var(--text);
     }
 
     .container {
       max-width: 600px;
       width: 100%;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-top: 6px solid var(--primary);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      position: relative;
     }
 
-    h2, h3 {
+    .logo {
+      display: block;
+      margin: 0 auto 10px;
+      width: 80px;
+      border-radius: 50%;
+    }
+
+    h2 {
       text-align: center;
       color: var(--primary);
+      margin-bottom: 25px;
+      font-family: 'Georgia', serif;
     }
 
-    form, .card, .history-entry, .pending-entry {
+    .step {
       margin-bottom: 20px;
     }
 
-    input, select, textarea, button {
+    .floating-label {
+      position: relative;
+      margin-top: 20px;
+    }
+
+    .floating-label input,
+    .floating-label textarea {
       width: 100%;
-      padding: 12px;
+      padding: 14px 12px;
       font-size: 16px;
-      margin-top: 10px;
       border: 1px solid var(--accent);
-      border-radius: 6px;
-      box-sizing: border-box;
-      background-color: #fff;
+      border-radius: 8px;
+      background-color: #fdfdfd;
       color: var(--text);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .floating-label label {
+      position: absolute;
+      top: 8px;
+      left: 12px;
+      background: var(--glass-bg);
+      padding: 0 6px;
+      font-size: 14px;
+      color: var(--accent);
+      transition: 0.3s ease;
+    }
+
+    .floating-label input:focus + label,
+    .floating-label textarea:focus + label,
+    .floating-label input:not(:placeholder-shown) + label,
+    .floating-label textarea:not(:placeholder-shown) + label {
+      top: -10px;
+      font-size: 12px;
+      color: var(--primary);
+    }
+
+    .service-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--glass-bg);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .service-card {
+      background: #fff8f0;
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      font-weight: 500;
+    }
+
+    .service-card:hover {
+      transform: translateY(-2px);
+      background-color: #f3e5f5;
+    }
+
+    .service-card.selected {
+      border-color: var(--primary);
+      background-color: #f3e5f5;
+      color: var(--primary);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--highlight);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 999;
+    }
+
+    .confirmation-card {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff8f0;
+      border: 1px solid var(--accent);
+      border-radius: 10px;
     }
 
     button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
       background-color: var(--primary);
       color: white;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      margin-top: 10px;
     }
 
     button:hover {
-      background-color: var(--highlight);
+      background-color: var(--hover);
     }
 
-    .card, .history-entry, .pending-entry {
-      border: 1px solid var(--accent);
-      padding: 15px;
-      border-radius: 8px;
-      background: #fdf6e3;
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      float: right;
     }
 
-    .pending-entry {
-      background: #fff3cd;
-    }
-
-    .status {
-      font-weight: bold;
-      margin-top: 10px;
-      padding: 8px;
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    .status.Confirmed {
-      background-color: #d4edda;
-      color: #155724;
-    }
-
-    .status.Canceled {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-
-    .status.Rescheduled {
-      background-color: #cce5ff;
-      color: #004085;
-    }
-
-    .message {
-      margin-top: 10px;
-      font-style: italic;
-      color: var(--text);
+    @media (max-width: 600px) {
+      .service-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <img src="https://via.placeholder.com/80" alt="GlowUp Logo" class="logo" />
     <h2>Book Your Appointment</h2>
+
     <form id="bookingForm">
-      <input name="Name" placeholder="Full Name" required />
-      <input name="Phone" placeholder="Phone Number" required />
-      <select name="Service" required>
-        <option value="">Select Service</option>
-        <option>Hair Cut</option>
-        <option>Braids</option>
-        <option>Hair-color</option>
-        <option>Beard Trim</option>
-      </select>
-      <input name="Date" type="date" required />
-      <input name="Time" type="time" required />
-      <input name="Stylist" placeholder="Preferred Barber" />
-      <textarea name="Notes" placeholder="Additional Notes"></textarea>
-      <button type="submit">Submit</button>
+      <div class="step">
+        <div class="floating-label">
+          <input name="Name" placeholder=" " required />
+          <label>Full Name</label>
+        </div>
+        <div class="floating-label">
+          <input name="Phone" placeholder=" " required />
+          <label>Phone Number</label>
+        </div>
+      </div>
+
+      <div class="step">
+        <button type="button" onclick="openServicePopup()">Select Services</button>
+        <input type="hidden" name="Service" id="selectedServices" required />
+      </div>
+
+      <div class="step">
+        <div class="floating-label">
+          <input name="Date" type="date" placeholder=" " required />
+          <label>Date</label>
+        </div>
+        <div class="floating-label">
+          <input name="Time" type="time" placeholder=" " required />
+          <label>Time</label>
+        </div>
+        <div class="floating-label">
+          <input name="Stylist" placeholder=" " />
+          <label>Preferred Barber</label>
+        </div>
+        <div class="floating-label">
+          <textarea name="Notes" placeholder=" "></textarea>
+          <label>Additional Notes</label>
+        </div>
+      </div>
+
+      <button type="submit">Submit Appointment</button>
     </form>
 
-    <div id="confirmationCard" style="display:none;"></div>
+    <div id="confirmationCard" class="confirmation-card" style="display:none;"></div>
+    <div class="toast" id="toast">Appointment submitted successfully!</div>
 
-    <button onclick="clearBookingHistory()">Clear My Booking History</button>
-
-    <div id="pendingBookings">
-      <h3>Pending Bookings</h3>
-      <div id="pendingList"></div>
+    <div class="service-popup" id="servicePopup">
+      <h3>Select Services</h3>
+      <div class="service-grid">
+        <div class="service-card" onclick="toggleService(this, 'Hair Cut')">Hair Cut</div>
+        <div class="service-card" onclick="toggleService(this, 'Braids')">Braids</div>
+        <div class="service-card" onclick="toggleService(this, 'Hair-color')">Hair-color</div>
+        <div class="service-card" onclick="toggleService(this, 'Beard Trim')">Beard Trim</div>
+      </div>
+      <button onclick="closeServicePopup()">Done</button>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AlzaSyAGhPaWhjPc9l6cWa4nDkg8Kt3c7H0UzM",
+    authDomain: "salonbooking-6d5aa.firebaseapp.com",
+    databaseURL: "https://salonbooking-6d5aa-default-rtdb.firebaseio.com/",
+    projectId: "salonbooking-6d5aa",
+    storageBucket: "salonbooking-6d5aa.appspot.com",
+    messagingSenderId: "11411859014",
+    appId: "1:11411859014:web:926076fa2feba87280c47"
+  };
 
-    <div id="bookingHistory">
-      <h3>Your Confirmed Bookings</h3>
-      <div id="historyList"></div>
-    </div>
-  </div>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AlzaSyAGhPaWhjPc9l6cWa4nDkg8Kt3c7H0UzM",
-      authDomain: "salonbooking-6d5aa.firebaseapp.com",
-      databaseURL: "https://salonbooking-6d5aa-default-rtdb.firebaseio.com/",
-      projectId: "salonbooking-6d5aa",
-      storageBucket: "salonbooking-6d5aa.appspot.com",
-      messagingSenderId: "11411859014",
-      appId: "1:11411859014:web:926076fa2feba87280c47"
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const form = document.getElementById('bookingForm');
+  const toast = document.getElementById('toast');
+  const confirmationCard = document.getElementById('confirmationCard');
+  const servicePopup = document.getElementById('servicePopup');
+  const selectedServicesInput = document.getElementById('selectedServices');
+  let selectedServices = [];
+
+  function openServicePopup() {
+    servicePopup.style.display = 'block';
+  }
+
+  function closeServicePopup() {
+    selectedServicesInput.value = selectedServices.join(', ');
+    servicePopup.style.display = 'none';
+  }
+
+  function toggleService(card, serviceName) {
+    if (selectedServices.includes(serviceName)) {
+      selectedServices = selectedServices.filter(s => s !== serviceName);
+      card.classList.remove('selected');
+    } else {
+      selectedServices.push(serviceName);
+      card.classList.add('selected');
+    }
+  }
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+
+  function formatTime12hr(timeStr) {
+    const [hour, minute] = timeStr.split(':');
+    const h = parseInt(hour);
+    const suffix = h >= 12 ? 'PM' : 'AM';
+    const hour12 = h % 12 || 12;
+    return `${hour12}:${minute} ${suffix}`;
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const phone = form.Phone.value.trim();
+    if (!/^0[79]\d{8}$/.test(phone)) {
+      showToast("Phone must start with 09 or 07 and be 10 digits.");
+      return;
+    }
+
+    const bookingData = {
+      Name: form.Name.value,
+      Phone: phone,
+      Service: selectedServices.join(', '),
+      Date: form.Date.value,
+      Time: form.Time.value,
+      Stylist: form.Stylist.value,
+      Notes: form.Notes.value,
+      Timestamp: new Date().toISOString(),
+      Status: "Pending"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const form = document.getElementById('bookingForm');
+    const ref = db.ref("bookings").push();
+    ref.set(bookingData).then(() => {
+      bookingData.RefID = ref.key;
+      showToast("Appointment submitted successfully!");
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-
-      const bookingData = {
-        Name: form.Name.value,
-        Phone: form.Phone.value,
-        Service: form.Service.value,
-        Date: form.Date.value,
-        Time: form.Time.value,
-        Stylist: form.Stylist.value,
-        Notes: form.Notes.value,
-        Timestamp: new Date().toISOString(),
-        Status: "Pending"
-      };
-
-      const ref = db.ref("bookings").push();
-      ref.set(bookingData).then(() => {
-        bookingData.RefID = ref.key;
-
-        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-        history.push(bookingData);
-        localStorage.setItem("bookingHistory", JSON.stringify(history));
-
-        document.getElementById("confirmationCard").innerHTML = `
-          <div class="card">
-            <h3>Appointment Submitted</h3>
-            <p><strong>Name:</strong> ${bookingData.Name}</p>
-            <p><strong>Service:</strong> ${bookingData.Service}</p>
-            <p><strong>Date:</strong> ${bookingData.Date}</p>
-            <p><strong>Time:</strong> ${bookingData.Time}</p>
-            <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
-            <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
-            <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
-          </div>
-        `;
-        document.getElementById("confirmationCard").style.display = "block";
-
-        form.reset();
-        showBookingHistory();
-        listenForStatusUpdates(bookingData.Phone);
-      }).catch(error => alert("Firebase error: " + error.message));
-    });
-
-    function listenForStatusUpdates(phone) {
-      db.ref("bookings").orderByChild("Phone").equalTo(phone).on("value", snapshot => {
-        const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-        let updated = false;
-
-        snapshot.forEach(child => {
-          const data = child.val();
-          const refID = child.key;
-          const matchIndex = history.findIndex(b => b.RefID === refID || b.Phone === data.Phone);
-
-          if (matchIndex !== -1) {
-            history[matchIndex].Status = data.Status;
-            history[matchIndex].Message = data.Message || "";
-            updated = true;
-          }
-        });
-
-        if (updated) {
-          localStorage.setItem("bookingHistory", JSON.stringify(history));
-          showBookingHistory();
-        }
-      });
-    }
-
-    function showBookingHistory() {
-      const history = JSON.parse(localStorage.getItem("bookingHistory") || "[]");
-      const historyList = document.getElementById("historyList");
-      const pendingList = document.getElementById("pendingList");
-
-      historyList.innerHTML = "";
-      pendingList.innerHTML = "";
-
-      history.forEach(data => {
-        const entry = `
-          <div class="${data.Status === 'Pending' ? 'pending-entry' : 'history-entry'}">
-            <p><strong>Service:</strong> ${data.Service}</p>
-            <p><strong>Date:</strong> ${data.Date}</p>
-            <p><strong>Time:</strong> ${data.Time}</p>
-            <p><strong>Stylist:</strong> ${data.Stylist || "Any"}</p>
-            <p><strong>Ref ID:</strong> ${data.RefID || "N/A"}</p>
-            <p><strong>Booked At:</strong> ${new Date(data.Timestamp).toLocaleString()}</p>
-            ${data.Status !== "Pending" ? `<div class="status ${data.Status}">${data.Status}</div>` : ""}
-            ${data.Message ? `<div class="message">${data.Message}</div>` : ""}
-          </div>
-        `;
-        if (data.Status === "Pending") {
-          pendingList.innerHTML += entry;
-        } else {
-          historyList.innerHTML += entry;
-        }
-      });
-    }
-
-    function clearBookingHistory() {
-      localStorage.removeItem("bookingHistory");
-      document.getElementById("historyList").innerHTML = "";
-      document.getElementById("pendingList").innerHTML = "";
-      alert("Your booking history has been cleared.");
-    }
-
-    showBookingHistory();
-  </script>
+      confirmationCard.innerHTML = `
+        <img src="https://via.placeholder.com/40" class="avatar" />
+        <h3>Appointment Summary</h3>
+        <p><strong>Name:</strong> ${bookingData.Name}</p>
+        <p><strong>Services:</strong> ${bookingData.Service}</p>
+        <p><strong>Date:</strong> ${bookingData.Date}</p>
+        <p><strong>Time:</strong> ${formatTime12hr(bookingData.Time)}</p>
+        <p><strong>Stylist:</strong> ${bookingData.Stylist || "Any Available"}</p>
+        <p><strong>Notes:</strong> ${bookingData.Notes || "None"}</p>
+        <p><strong>Ref ID:</strong> ${bookingData.RefID}</p>
+        <p><strong>Booked At:</strong> ${new Date(bookingData.Timestamp).toLocaleString()}</p>
+      `;
+      confirmationCard.style.display = "block";
+      form.reset();
+      selectedServices = [];
+      selectedServicesInput.value = "";
+      document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+    }).catch(error => alert("Firebase error: " + error.message));
+  });
+</script>
 </body>
-    </html>
+</html>
